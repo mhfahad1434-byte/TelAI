@@ -25,9 +25,8 @@ jobs:
           distribution: 'temurin'
           cache: gradle
 
-      - name: Configure Android SDK & Accept Licenses Non-Interactively
+      - name: Configure Android SDK & Accept Licenses
         run: |
-          # Use pre-installed Android SDK on GitHub Actions runner
           export ANDROID_HOME=${ANDROID_HOME:-/usr/local/lib/android/sdk}
           export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools
 
@@ -43,16 +42,28 @@ jobs:
       - name: Grant Execute Permission to Gradlew
         run: chmod +x android/gradlew
 
-      - name: Build Debug APK with Gradle
+      - name: Build Android Debug APK
         run: |
-          cd android
-          ./gradlew assembleDebug --stacktrace --no-daemon
+          cd android && ./gradlew :app:assembleDebug --stacktrace --no-daemon
+
+      - name: Mandatory APK Existence Verification
+        run: |
+          APK_PATH="android/app/build/outputs/apk/debug/app-debug.apk"
+          if [ ! -f "$APK_PATH" ]; then
+            echo "::error::CRITICAL FAILURE: APK was not generated at $APK_PATH"
+            echo "Listing build outputs directory if present:"
+            ls -laR android/app/build/outputs/ || true
+            exit 1
+          fi
+          echo "SUCCESS: Found verified APK at $APK_PATH"
+          ls -lh "$APK_PATH"
 
       - name: Upload Debug APK Artifact
         uses: actions/upload-artifact@v4
         with:
           name: TelAI-debug-apk
           path: android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
           retention-days: 30
 
       - name: Create Release with APK
