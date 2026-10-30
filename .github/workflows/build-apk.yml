@@ -5,7 +5,7 @@ on:
     branches: [ "main", "master" ]
   pull_request:
     branches: [ "main", "master" ]
-  workflow_dispatch: # Allows 1-tap manual trigger from GitHub Mobile web or app
+  workflow_dispatch: # Allows 1-tap manual build trigger from GitHub Mobile or web
 
 jobs:
   build:
@@ -25,8 +25,20 @@ jobs:
           distribution: 'temurin'
           cache: gradle
 
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
+      - name: Configure Android SDK & Accept Licenses Non-Interactively
+        run: |
+          # Use pre-installed Android SDK on GitHub Actions runner
+          export ANDROID_HOME=${ANDROID_HOME:-/usr/local/lib/android/sdk}
+          export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools
+
+          echo "ANDROID_HOME=$ANDROID_HOME"
+          mkdir -p "$ANDROID_HOME/licenses"
+
+          # Automatically accept all 8 Android SDK licenses non-interactively
+          yes | sdkmanager --licenses || true
+
+          # Install required compile SDK platform 35 and matching build tools 35.0.0
+          sdkmanager "platforms;android-35" "build-tools;35.0.0" "platform-tools"
 
       - name: Grant Execute Permission to Gradlew
         run: chmod +x android/gradlew
@@ -34,7 +46,7 @@ jobs:
       - name: Build Debug APK with Gradle
         run: |
           cd android
-          ./gradlew assembleDebug --stacktrace
+          ./gradlew assembleDebug --stacktrace --no-daemon
 
       - name: Upload Debug APK Artifact
         uses: actions/upload-artifact@v4
