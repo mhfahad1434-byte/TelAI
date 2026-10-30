@@ -1,0 +1,6 @@
+{
+  "name": "TelAI - Telegram AI Personal Agent",
+  "description": "Native Android & Interactive TDLib Telegram AI personal agent with configurable AI providers (Gemini & OpenAI-compatible), approval workflows, message search and automation.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

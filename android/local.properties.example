@@ -1,0 +1,11 @@
+# Android SDK Location (Auto-configured on GitHub Actions & Android Studio)
+# sdk.dir=/path/to/your/android-sdk
+
+# Optional: Telegram API credentials from https://my.telegram.org
+# If not provided here, you can enter them directly inside TelAI App Settings on your phone!
+telegram.api_id=YOUR_TELEGRAM_API_ID
+telegram.api_hash=YOUR_TELEGRAM_API_HASH
+
+# Optional: Default Gemini API Key from Google AI Studio
+# Can also be entered securely inside TelAI App > AI Models screen (encrypted via Android Keystore)
+gemini.api_key=YOUR_GEMINI_API_KEY

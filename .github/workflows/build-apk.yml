@@ -1,0 +1,65 @@
+name: Build TelAI Android APK
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+  workflow_dispatch: # Allows 1-tap manual trigger from GitHub Mobile web or app
+
+jobs:
+  build:
+    name: Build Android APK
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Grant Execute Permission to Gradlew
+        run: chmod +x android/gradlew
+
+      - name: Build Debug APK with Gradle
+        run: |
+          cd android
+          ./gradlew assembleDebug --stacktrace
+
+      - name: Upload Debug APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: TelAI-debug-apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+          retention-days: 30
+
+      - name: Create Release with APK
+        if: github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        continue-on-error: true # Ensure job succeeds even if releases are restricted
+        with:
+          files: android/app/build/outputs/apk/debug/app-debug.apk
+          tag_name: v1.0.0-build-${{ github.run_number }}
+          name: "TelAI Android Release v1.0.0 (Build ${{ github.run_number }})"
+          body: |
+            ### TelAI — Native Android Personal Agent APK
+            - **Target:** Android 8.0+ (API 26+)
+            - **Architecture:** Jetpack Compose + Official TDLib MTProto Client
+            - **AI Engine:** Configurable Provider (Gemini Native + OpenAI Compatible)
+            - **Security:** Android Keystore Hardware AES-256-GCM
+            
+            **Installation:** Download `app-debug.apk` directly to your Android device and tap to install.
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

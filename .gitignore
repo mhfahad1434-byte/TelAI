@@ -1,0 +1,46 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build Outputs
+dist/
+build/
+coverage/
+*.apk
+*.aab
+
+# Android & Gradle
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+.idea/
+*.iml
+.gradle/
+captures/
+
+# Keystores & Signing Secrets (CRITICAL SECURITY)
+*.jks
+*.keystore
+*.key
+*.pem
+*.p12
+
+# Telegram Session & Local Data (STRICT NON-NEGOTIABLE)
+tdlib_data/
+*.binlog
+*.session
+
+# Environment & Logs
+.env*
+!.env.example
+*.log
+.DS_Store
+Thumbs.db
+
+# Python bytecode
+__pycache__/
+*.pyc
+
+# Public binary downloads
+public/telai-android-project.zip

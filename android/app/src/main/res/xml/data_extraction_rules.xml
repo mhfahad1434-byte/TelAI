@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data-extraction-rules>
+    <cloud-backup>
+        <!-- Disallow all cloud backups to prevent leaking TDLib auth tokens or local keystore encrypted DB -->
+        <exclude path="tdlib_data/" />
+        <exclude path="databases/" />
+        <exclude path="shared_prefs/" />
+    </cloud-backup>
+    <device-transfer>
+        <exclude path="tdlib_data/" />
+    </device-transfer>
+</data-extraction-rules>
